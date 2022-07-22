@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
@@ -6,8 +5,7 @@ import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import type { EntryContext } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
-import { createEmotionCache } from './utils/emotionCache';
-import theme from './utils/theme';
+import { createEmotionCache, theme } from '~/utils';
 
 export default function handleRequest(
 	request: Request,

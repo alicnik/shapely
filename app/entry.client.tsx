@@ -4,9 +4,8 @@ import { hydrate } from 'react-dom';
 import { CacheProvider } from '@emotion/react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createEmotionCache } from './utils/emotionCache';
-import { ClientStyleContextProvider } from './context/ClientStyleContext';
-import theme from './utils/theme';
+import { createEmotionCache, theme } from '~/utils';
+import { ClientStyleContextProvider } from '~/context';
 import { RemixBrowser } from '@remix-run/react';
 
 interface ClientCacheProviderProps {

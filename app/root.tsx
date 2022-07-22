@@ -1,8 +1,7 @@
 import * as React from 'react';
-
 import { withEmotionCache } from '@emotion/react';
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material';
-import { useClientStyleContext } from './context/ClientStyleContext';
+import { useClientStyleContext } from '~/context';
 import {
 	Meta,
 	Links,
@@ -12,8 +11,8 @@ import {
 	Outlet,
 	useCatch,
 } from '@remix-run/react';
-import { Layout } from './components/Layout';
-import theme from './utils/theme';
+import { Layout } from '~/components';
+import { theme } from '~/utils';
 
 interface DocumentProps {
 	children: React.ReactNode;

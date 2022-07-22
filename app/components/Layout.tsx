@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { ProTip } from './ProTip';
 import { Copyright } from './Copyright';
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -9,7 +8,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 		<Container maxWidth="sm">
 			<Box sx={{ my: 4 }}>
 				{children}
-				<ProTip />
 				<Copyright />
 			</Box>
 		</Container>
