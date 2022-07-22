@@ -7,6 +7,9 @@
     "start": "cross-env NODE_ENV=production netlify dev"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.9.1",
     "@netlify/functions": "^1.0.0",
     "@prisma/client": "^4.1.0",
     "@remix-run/netlify": "^1.6.5",
