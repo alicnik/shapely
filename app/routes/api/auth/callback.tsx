@@ -1,11 +1,12 @@
 import type { LoaderFunction } from '@remix-run/node';
-import { redirect } from '@remix-run/node';
 import { fetch } from '@remix-run/node';
 import invariant from 'tiny-invariant';
+import { createUserSession } from '~/utils';
 import { prisma } from '~/utils/prisma.server';
 
 export const loader: LoaderFunction = async ({ request }) => {
 	const url = new URL(request.url);
+	console.log('SEARCH PARAMS IN CALLBACK', url.searchParams);
 	const authorisationCode = url.searchParams.get('code');
 
 	invariant(authorisationCode, 'Expected an authorisation code from Atlassian');
@@ -18,20 +19,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 		redirect_uri: 'http://localhost:3000/api/auth/callback',
 	};
 
-	const { access_token: bearerToken, expires_in: expiresIn } = await fetch(
-		'https://auth.atlassian.com/oauth/token',
-		{
-			method: 'post',
+	const { access_token: bearerToken, refresh_token: refreshToken } =
+		await fetch('https://auth.atlassian.com/oauth/token', {
+			method: 'POST',
 			body: JSON.stringify(accessTokenReqBody),
 			headers: {
 				'Content-Type': 'application/json',
 			},
-		}
-	).then((res) => res.json());
+		}).then((res) => res.json());
 
 	invariant(bearerToken, 'No bearer token received from access token request');
-
-	const tokenExpiry = new Date(Date.now() + expiresIn * 1000);
 
 	const { accountId, emailAddress, avatarUrls, displayName } = await fetch(
 		`https://api.atlassian.com/ex/jira/${process.env.ATLASSIAN_CLOUD_ID}//rest/api/3/myself`,
@@ -45,27 +42,22 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 	let user = await prisma.user.findUnique({ where: { accountId } });
 
-	if (user) {
-		await prisma.user.update({
-			where: { accountId },
-			data: { accountId, bearerToken, tokenExpiry },
-		});
-	} else {
-		user = await prisma.user.create({
+	if (!user) {
+		await prisma.user.create({
 			data: {
 				emailAddress,
 				displayName,
 				avatar: avatarUrls['48x48'],
 				accountId,
-				bearerToken,
-				tokenExpiry,
 			},
 		});
 	}
 
-	return redirect('/', {
-		headers: {
-			'Set-Cookie': `atlassian-bearer-token=${bearerToken}; path=/; Expires=${tokenExpiry.toUTCString()}; SameSite=lax; Secure;`,
-		},
+	console.log({ bearerToken, refreshToken });
+
+	return createUserSession({
+		request,
+		bearerToken,
+		refreshToken,
 	});
 };

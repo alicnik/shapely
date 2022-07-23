@@ -3,5 +3,6 @@ declare namespace NodeJS {
 		ATLASSIAN_CLIENT_ID: string;
 		ATLASSIAN_CLIENT_SECRET: string;
 		ATLASSIAN_CLOUD_ID: string;
+		SESSION_SECRET: string;
 	}
 }

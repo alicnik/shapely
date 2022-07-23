@@ -10,9 +10,13 @@ import {
 	LiveReload,
 	Outlet,
 	useCatch,
+	useLoaderData,
 } from '@remix-run/react';
 import { Layout } from '~/components';
-import { theme } from '~/utils';
+import { getIsLoggedIn, refresh, theme } from '~/utils';
+import { AuthContextProvider } from './context/AuthContext';
+import type { LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
 
 interface DocumentProps {
 	children: React.ReactNode;
@@ -36,7 +40,6 @@ const Document = withEmotionCache(
 			});
 			// reset cache to reapply global styles
 			clientStyleData.reset();
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, []);
 
 		return (
@@ -68,15 +71,26 @@ const Document = withEmotionCache(
 	}
 );
 
-// https://remix.run/api/conventions#default-export
+export const loader: LoaderFunction = async ({ request }) => {
+	await refresh({ request, currentUrl: request.url });
+	const isLoggedIn = await getIsLoggedIn(request);
+	return json({ isLoggedIn });
+};
+
 // https://remix.run/api/conventions#route-filenames
 export default function App() {
+	const { isLoggedIn } = useLoaderData();
+
+	console.log(isLoggedIn);
+
 	return (
-		<Document>
-			<Layout>
-				<Outlet />
-			</Layout>
-		</Document>
+		<AuthContextProvider isLoggedIn={isLoggedIn}>
+			<Document>
+				<Layout>
+					<Outlet />
+				</Layout>
+			</Document>
+		</AuthContextProvider>
 	);
 }
 
