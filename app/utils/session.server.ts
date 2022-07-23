@@ -85,6 +85,11 @@ export async function getIsLoggedIn(request: Request) {
 	return Date.now() < expiry;
 }
 
+export async function getToken(request: Request) {
+	const session = await getSession(request);
+	const token = session.get(ATLASSIAN_BEARER_TOKEN_KEY);
+	return token;
+}
 function getTokenExpiry(token: string) {
 	const decodedToken = Buffer.from(token.split('.')[1], 'base64');
 	const { exp } = JSON.parse(decodedToken.toString());
